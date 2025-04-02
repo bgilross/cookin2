@@ -1,4 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://c1htfmdda8xn6"]
+[gd_scene load_steps=10 format=3 uid="uid://c1htfmdda8xn6"]
+
+[ext_resource type="Script" uid="uid://dy2u6s33l0rwk" path="res://Scripts/charController.gd" id="1_jjgbg"]
+[ext_resource type="Script" uid="uid://borqj0ivmf06u" path="res://Scripts/InteractionController.gd" id="2_8gbba"]
+[ext_resource type="PackedScene" uid="uid://co0f10xhgbr74" path="res://Prefabs/ball.tscn" id="2_bo1nx"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_7dm0k"]
 sky_top_color = Color(0.258006, 0.571359, 0.976834, 1)
@@ -17,6 +21,9 @@ tonemap_mode = 2
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_h2yge"]
 radius = 0.4
 height = 1.6
+
+[sub_resource type="LabelSettings" id="LabelSettings_jjgbg"]
+font_size = 38
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_1bvp3"]
 size = Vector3(0.769531, 1.7251, 0.0465088)
@@ -66,6 +73,7 @@ use_collision = true
 size = Vector3(7.96387, 1, 1)
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="."]
+script = ExtResource("1_jjgbg")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
@@ -74,8 +82,31 @@ shape = SubResource("CapsuleShape3D_h2yge")
 [node name="MainCamera" type="Camera3D" parent="CharacterBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.19478, 0)
 
+[node name="InteractionController" type="RayCast3D" parent="CharacterBody3D/MainCamera"]
+target_position = Vector3(0, 0, -2.5)
+script = ExtResource("2_8gbba")
+
+[node name="InteractionPrompt" type="Label" parent="CharacterBody3D/MainCamera/InteractionController"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -377.0
+offset_top = -75.0
+offset_right = 377.0
+offset_bottom = 75.0
+grow_horizontal = 2
+grow_vertical = 2
+label_settings = SubResource("LabelSettings_jjgbg")
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="PushArea" type="Area3D" parent="CharacterBody3D"]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D/PushArea"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.741855, -0.411901)
 shape = SubResource("BoxShape3D_1bvp3")
+
+[node name="Ball" parent="." instance=ExtResource("2_bo1nx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.12116, 0.606646, -1.80748)
