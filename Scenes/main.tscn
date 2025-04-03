@@ -1,6 +1,6 @@
 [gd_scene load_steps=10 format=3 uid="uid://c1htfmdda8xn6"]
 
-[ext_resource type="Script" uid="uid://dy2u6s33l0rwk" path="res://Scripts/charController.gd" id="1_jjgbg"]
+[ext_resource type="Script" uid="uid://dy2u6s33l0rwk" path="res://Scripts/CharacterController.gd" id="1_jjgbg"]
 [ext_resource type="Script" uid="uid://borqj0ivmf06u" path="res://Scripts/InteractionController.gd" id="2_8gbba"]
 [ext_resource type="PackedScene" uid="uid://co0f10xhgbr74" path="res://Prefabs/ball.tscn" id="2_bo1nx"]
 

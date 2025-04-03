@@ -1,3 +1,6 @@
+#InteractableObject this class is the base for ALL objects which can be interacted with in ANY way, I hope.
+#extending from here would be Storage Objects, Pickable Objects, Buttons, etc.
+
 class_name InteractableObject
 extends Node3D
 

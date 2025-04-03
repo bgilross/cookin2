@@ -1,3 +1,9 @@
+#Attached to the InteractionController RayCast
+#This controller should handle the player detection of interactable objects
+#then it will display to the InteractionPrompt (Text Label placed in front of player) the items specific interact prompt
+#This also checks for the Input action Interact being pressed, then calls object._interact
+#I assume we can add the pickup logic in simply enough....
+
 extends RayCast3D
 
 @onready var interact_prompt_label : Label = get_node("InteractionPrompt")
