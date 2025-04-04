@@ -12,7 +12,7 @@ var is_configured: bool = false
 var item_type_mesh: Mesh = null
 var visual_slots: Array[Transform3D] = []
 
-@onready var storage_area: Area3D = $StorageArea
+@onready var storage_area: Area3D = get_parent().get_node("StorageArea")
 
 func _ready() -> void:
 	print("[VSO] READY")
@@ -21,7 +21,8 @@ func _ready() -> void:
 		return
 
 	print("[VSO] Has StorageArea")
-	call_deferred("_init_storage")
+	await get_tree().process_frame
+	_init_storage()
 	storage_area.body_entered.connect(_on_storage_area_body_entered)
 	storage_area.body_exited.connect(_on_storage_area_body_exited)
 
@@ -44,7 +45,10 @@ func store_item(item: Node3D) -> bool:
 		return false
 	
 	var slot = visual_slots[stored_items.size()]
-	var parent_transform = get_root_body().global_transform
+	var root = get_root_body()
+	var parent_transform: Transform3D = Transform3D.IDENTITY
+	if root is Node3D:
+		parent_transform = (root as Node3D).global_transform
 	item.global_transform = parent_transform * slot
 	add_child(item)
 	stored_items.append(item)
@@ -61,6 +65,10 @@ func remove_item(item: Node3D) -> Node3D:
 	return item
 
 func recalculate_storage_slots(item_size: Vector3, draw_debug := true) -> void:
+	print("[VSO] Recalculating storage slots...")
+	print("[VSO] Item size: ", item_size)
+	print("[VSO] Padding: ", padding)
+
 	# Clear previous slots and debug meshes
 	visual_slots.clear()
 	_clear_slot_debug_meshes()
@@ -70,12 +78,17 @@ func recalculate_storage_slots(item_size: Vector3, draw_debug := true) -> void:
 		push_error("StorageArea must use BoxShape3D")
 		return
 
+	print("[VSO] Found valid CollisionShape3D")
 	var box_size = shape.shape.size
+	print("[VSO] Box size: ", box_size)
+
 	var grid = Vector3(
 		floor(box_size.x / (item_size.x + padding)),
 		floor(box_size.y / (item_size.y + padding)),
 		floor(box_size.z / (item_size.z + padding))
 	)
+	print("[VSO] Grid size (slots in x/y/z): ", grid)
+
 	var origin = -box_size / 2 + item_size / 2
 	var index = 0
 
@@ -88,6 +101,7 @@ func recalculate_storage_slots(item_size: Vector3, draw_debug := true) -> void:
 				var transform = Transform3D(Basis(), pos)
 				visual_slots.append(transform)
 				if draw_debug:
+					print("[VSO] Spawning debug slot mesh at index %d: %s" % [index, pos])
 					_spawn_slot_debug_mesh(transform.origin, item_size, index)
 				index += 1
 
@@ -123,22 +137,26 @@ func _on_storage_area_body_exited(body: Node) -> void:
 	if body.has_method("pickup"):
 		print("Item left storage area: ", body.name)
 
-func get_root_body() -> Node3D:
+func get_root_body() -> Node:
 	var current = self
 	while current.get_parent():
 		current = current.get_parent()
 	return current
 
 func _spawn_slot_debug_mesh(pos: Vector3, size: Vector3, index: int) -> void:
+	print("[VSO] Creating SlotDebugMesh_%d at %s with size %s" % [index, pos, size])
 	var ghost = MeshInstance3D.new()
 	ghost.name = "SlotDebugMesh_%d" % index
 	ghost.mesh = BoxMesh.new()
 	ghost.mesh.size = size
-	ghost.transform.origin = pos
+	var root = get_root_body()
+	if root is Node3D:
+		ghost.global_transform = (root as Node3D).global_transform * Transform3D(Basis(), pos)
+	else:
+		ghost.global_transform = Transform3D(Basis(), pos)
 	ghost.visible = true
 	ghost.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	ghost.set_collision_layer(0)
-	ghost.set_collision_mask(0)
+
 	var mat = StandardMaterial3D.new()
 	mat.albedo_color = Color(0, 1, 0, 0.4)
 	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
