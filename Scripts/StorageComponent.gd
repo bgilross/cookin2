@@ -5,39 +5,46 @@ class_name StorageComponent
 @export var allowed_item: Node = null
 @export var can_store: bool = true
 
-
 var stored_items: Array[Node] = []
 
 func _ready():
-	interaction_prompt = "Press [F] to open Storage"
+	print("[Storage] Ready from ", self.name)
+	interaction_prompt = "Press [F] to use Storage"
 	
 func main_interaction(interactor):
-	print("interacting with Storage Crate: ")
-	#probably for regular crates this would be opening them up to view contents in a UI
-	#for VSO Visible Storage Object, they will have a class extending this, probably with a function to check and set parameters before running attempt add./add
+	print("[Storage] Interacting with Storage: ", get_parent().name)
 	
+	# Check if the player is holding an item that can be stored
+	if interactor.held_item:
+		print("[Storage] Player is holding item: ", interactor.held_item.name)
+		
+		# If we're a base StorageComponent, just handle basic storage
+		if self.get_script() == load("res://Scripts/StorageComponent.gd"):
+			attempt_add_item(interactor.held_item)
+		
+		# If we're a derived class (like VisibleStorageObject), let it handle storage
+		# This check prevents infinite recursion
+	else:
+		print("[Storage] No item held for storage")
 	
 func attempt_add_item(item:Node) -> bool:
+	print("[Storage] Attempting to add item: ", item.name)
 	if stored_items.size() >= item_capacity:
-		print("Storage is full")
+		print("[Storage] Storage is full")
 		return false
 		
 	if allowed_item:
 		if typeof(item) != typeof(allowed_item):
-			print("Item is not of assigned item type")
+			print("[Storage] Item is not of assigned item type")
 			return false
 		else:
-			print("Item is of assigned item type")
+			print("[Storage] Item is of assigned item type")
 			add_item(item)
 			return true	
-	elif not allowed_item:
+	else:
 		add_item(item)
 		return true
-	else:
-		return false
 		
 func add_item(item):
 	stored_items.append(item)
-	print("added item")
-	
-	
+	print("[Storage] Added item: ", item.name)

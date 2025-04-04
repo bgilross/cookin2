@@ -40,6 +40,8 @@ func drop():
 	body.global_transform.origin = start_pos
 
 	body.freeze = false
+	body.collision_layer = 1
+	body.collision_mask = 1
 	
 	body.linear_velocity = holder.get_real_velocity()
 	
@@ -47,6 +49,7 @@ func drop():
 	is_held = false
 	can_interact = true
 	holder = null
+	
 	
 func attempt_pickup(interactor: Node3D):
 	if not can_pickup:
@@ -80,6 +83,14 @@ func attempt_pickup(interactor: Node3D):
 	
 	body.transform.origin = pickup_offset
 	body.rotation = pickup_rotation
+	
+	# Store original collision mask/layer for restoring later
+	var original_layer = body.collision_layer
+	var original_mask = body.collision_mask
+
+	# Disable collisions when held
+	body.collision_layer = 0
+	body.collision_mask = 0
 	
 	can_interact = false
 	body.freeze = true
