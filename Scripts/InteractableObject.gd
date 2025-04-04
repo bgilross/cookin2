@@ -2,7 +2,7 @@
 #extending from here would be Storage Objects, Pickable Objects, Buttons, etc.
 
 class_name InteractableObject
-extends Node3D
+extends Node
 
 @export var interaction_prompt : String = "Press [F] to Interact"
 @export var can_interact : bool = true #ininteraction could be TEMPORARILY disabled, like door is in process of opening

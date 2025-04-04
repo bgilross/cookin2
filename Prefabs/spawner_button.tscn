@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3 uid="uid://cm8ij5j1pflns"]
+
+[ext_resource type="Script" uid="uid://1dhrv1se8v52" path="res://Scripts/Spawner.gd" id="1_05ayl"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_05ayl"]
+albedo_color = Color(0.215367, 0.554251, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_8gfvv"]
+material = SubResource("StandardMaterial3D_05ayl")
+size = Vector3(0.1, 0.1, 0.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1ccww"]
+size = Vector3(0.1, 0.1, 0.1)
+
+[node name="SpawnerButton" type="Node3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_8gfvv")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("BoxShape3D_1ccww")
+
+[node name="InteractionLogic" type="Node" parent="."]
+script = ExtResource("1_05ayl")

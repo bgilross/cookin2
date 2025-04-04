@@ -1,7 +1,8 @@
-[gd_scene load_steps=10 format=3 uid="uid://c1htfmdda8xn6"]
+[gd_scene load_steps=14 format=3 uid="uid://c1htfmdda8xn6"]
 
 [ext_resource type="Script" uid="uid://dy2u6s33l0rwk" path="res://Scripts/CharacterController.gd" id="1_jjgbg"]
 [ext_resource type="PackedScene" uid="uid://co0f10xhgbr74" path="res://Prefabs/ball.tscn" id="2_bo1nx"]
+[ext_resource type="Script" uid="uid://1dhrv1se8v52" path="res://Scripts/Spawner.gd" id="3_8gbba"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_7dm0k"]
 sky_top_color = Color(0.258006, 0.571359, 0.976834, 1)
@@ -28,6 +29,16 @@ font_size = 38
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_1bvp3"]
 size = Vector3(0.769531, 1.7251, 0.0465088)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_05ayl"]
+albedo_color = Color(0.215367, 0.554251, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_8gfvv"]
+material = SubResource("StandardMaterial3D_05ayl")
+size = Vector3(0.1, 0.1, 0.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1ccww"]
+size = Vector3(0.1, 0.1, 0.1)
 
 [node name="Main" type="Node3D"]
 
@@ -115,3 +126,21 @@ shape = SubResource("BoxShape3D_1bvp3")
 
 [node name="Ball" parent="." instance=ExtResource("2_bo1nx")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.12116, 0.606646, -1.80748)
+
+[node name="SpawnerButton" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.35751, 0.556646, -1.86951)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SpawnerButton"]
+mesh = SubResource("BoxMesh_8gfvv")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SpawnerButton"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SpawnerButton/StaticBody3D"]
+shape = SubResource("BoxShape3D_1ccww")
+
+[node name="InteractionLogic" type="Node" parent="SpawnerButton"]
+script = ExtResource("3_8gbba")
+item_scene = ExtResource("2_bo1nx")
+
+[node name="SpawnLocation" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.98355, -5.06712)

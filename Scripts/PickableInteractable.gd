@@ -95,7 +95,6 @@ func attempt_pickup(interactor: Node3D):
 	
 	can_interact = false
 	body.freeze = true
-	body.FREEZE_MODE_STATIC
 	interactor.held_item = body 
 	print(body.name, " picked up by ", interactor.name)
 	

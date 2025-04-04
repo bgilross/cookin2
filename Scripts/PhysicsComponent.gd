@@ -1,6 +1,6 @@
-extends PickableInteractable
+extends Node
+class_name PhysicsComponent
 
-class_name PhysicsPickable
 
 
 @export var use_continuous_cd: bool = true
@@ -11,16 +11,17 @@ class_name PhysicsPickable
 @export var material_absorbent: bool = false
 @export var material_rough: bool = false
 
+@onready var body := get_parent() as RigidBody3D
+
 func _ready():
-	print("ready from BALL")
+	print("ready from PhysicsComponent")
 	call_deferred("initialize_physics")
 
 func initialize_physics():
-	print("intializing Physics!")
-	var rigidBody := get_parent() as RigidBody3D
-	if not is_instance_valid(rigidBody):
-		push_error("PhysicsPickable requires a RigidBody3D as it's parent...")
-		return
+	if body:
+		print("initilizing physics from physics component in :", body.name)
+	else:
+		print("no body?")
 	
 	var mat := PhysicsMaterial.new()
 	mat.friction = material_friction
@@ -28,11 +29,10 @@ func initialize_physics():
 	mat.absorbent = material_absorbent
 	mat.rough = material_rough
 	
-	rigidBody.physics_material_override = mat
-	
-	rigidBody.continuous_cd = use_continuous_cd
-	rigidBody.mass = custom_mass
-	rigidBody.sleeping = false
-	rigidBody.freeze_mode = RigidBody3D.FREEZE_MODE_STATIC
+	body.physics_material_override = mat	
+	body.continuous_cd = use_continuous_cd
+	body.mass = custom_mass
+	body.sleeping = false
+	body.freeze_mode = RigidBody3D.FREEZE_MODE_STATIC
 	
 		
