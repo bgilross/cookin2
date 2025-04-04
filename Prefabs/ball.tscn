@@ -28,4 +28,4 @@ script = ExtResource("1_8a2hy")
 [node name="PhysicsLogic" type="Node3D" parent="."]
 script = ExtResource("2_n88cj")
 material_friction = 0.725
-material_bounce = 0.7
+material_bounce = 0.85

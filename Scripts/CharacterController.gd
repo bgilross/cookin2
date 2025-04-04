@@ -66,17 +66,16 @@ func raycast_interactables():
 	interact_prompt_label.text = ''
 	current_interactable = null
 
-	if collider:
-		# The collider is the RigidBody3D (Ball) not the collisionShape3D.... yea
+	if collider:		
+		# The collider is the RigidBody3D (Ball) not the collisionShape3D
 		var interactable = find_interactable_in(collider)
 		if interactable:
-			#maybe should check for interactble here, but I think I want prompt to show up either way....?
-			print("looking at ", interactable)
-			
+			#print("Found interactable: ", interactable.name, " with prompt: ", interactable.interaction_prompt)
 			interact_prompt_label.text = interactable.interaction_prompt
 			interact_prompt_label.visible = true
 			current_interactable = interactable
-					
+		#else:
+			#print("No interactable found in or near ", collider.name)
 	
 func _physics_process(delta: float) -> void:
 	# Add the gravity.
@@ -103,7 +102,32 @@ func _physics_process(delta: float) -> void:
 
 
 func find_interactable_in(node: Node) -> InteractableObject:
+	# Debug output for investigation
+	print("Searching for interactable in: ", node.name)	
+	# Check if this node is an InteractableObject
+	if node is InteractableObject:
+		print("Node itself is an InteractableObject!")
+		return node	
+	# Check direct children
 	for child in node.get_children():
+		print("Checking child: ", child.name, " (", child.get_class(), ")")
 		if child is InteractableObject:
-			return child
+			print("Found interactable child: ", child.name)
+			return child	
+	# Check parent's children (siblings)
+	if node.get_parent():
+		print("Checking siblings in parent: ", node.get_parent().name)
+		for child in node.get_parent().get_children():
+			if child is InteractableObject:
+				print("Found interactable sibling: ", child.name)
+				return child				
+	# Check parent node
+	if node.get_parent() and node.get_parent() is InteractableObject:
+		print("Parent is an InteractableObject: ", node.get_parent().name)
+		return node.get_parent()		
+	# As a last resort, check parent's parent (grandparent) node
+	if node.get_parent() and node.get_parent().get_parent() and node.get_parent().get_parent() is InteractableObject:
+		print("Grandparent is an InteractableObject: ", node.get_parent().get_parent().name)
+		return node.get_parent().get_parent()	
+	print("No interactable found for: ", node.name)
 	return null

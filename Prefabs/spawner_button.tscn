@@ -22,5 +22,5 @@ mesh = SubResource("BoxMesh_8gfvv")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
 shape = SubResource("BoxShape3D_1ccww")
 
-[node name="InteractionLogic" type="Node" parent="."]
+[node name="InteractionLogic" type="Node" parent="StaticBody3D"]
 script = ExtResource("1_05ayl")

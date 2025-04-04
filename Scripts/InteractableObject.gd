@@ -8,7 +8,7 @@ extends Node
 @export var can_interact : bool = true #ininteraction could be TEMPORARILY disabled, like door is in process of opening
 
 
-func _main_interaction():
+func main_interaction(interactor):
 	print("Override This Function!")
 
 

@@ -138,8 +138,9 @@ mesh = SubResource("BoxMesh_8gfvv")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="SpawnerButton/StaticBody3D"]
 shape = SubResource("BoxShape3D_1ccww")
 
-[node name="InteractionLogic" type="Node" parent="SpawnerButton"]
+[node name="InteractionLogic" type="Node" parent="SpawnerButton/StaticBody3D" node_paths=PackedStringArray("spawn_location")]
 script = ExtResource("3_8gbba")
+spawn_location = NodePath("../../../SpawnLocation")
 item_scene = ExtResource("2_bo1nx")
 
 [node name="SpawnLocation" type="Node3D" parent="."]

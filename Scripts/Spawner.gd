@@ -9,10 +9,16 @@ extends InteractableObject
 func _ready():
 	interaction_prompt = " Press [F] to Spawn Ball "
 	
-func main_interaction():
+func main_interaction(interactor = null):
 	_spawnball()
 	
 func _spawnball():
+	print("attempting spawn ball")
 	var item_instance = item_scene.instantiate()
-	item_instance.global_position = spawn_location
 	add_child(item_instance)
+
+	if spawn_location == null:
+		push_error("spawn_location is null!")
+		return
+
+	item_instance.global_transform.origin = spawn_location.global_transform.origin

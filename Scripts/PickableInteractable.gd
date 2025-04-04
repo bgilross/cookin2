@@ -15,7 +15,7 @@ var holder: Node3D = null
 func _ready():
 	interaction_prompt = "Press [F] to Pickup!"
 
-func main_interaction(interactor):
+func main_interaction(interactor = null):
 	if can_interact:
 		attempt_pickup(interactor)
 	else:
