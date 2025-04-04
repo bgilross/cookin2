@@ -5,9 +5,11 @@ extends CharacterBody3D
 @onready var MainCamera = $MainCamera
 @onready var interact_ray  = $MainCamera/InteractionRaycast
 @onready var interact_prompt_label = $MainCamera/InteractionPrompt
+@onready var push_area = $PushArea
 
 const SPEED = 5.0
 const JUMP_VELOCITY = 4.5
+const PUSH_FORCE = 10.0
 
 var CameraRotation = Vector2(0,0)
 var MouseSensitivity = 0.002
@@ -29,6 +31,18 @@ func _input(event):
 	if event.is_action_pressed("interact"):
 		if current_interactable:
 			print ("Char: interacting with ", current_interactable.name)
+			current_interactable.main_interaction(self)
+		else:
+			print ("No interactable to interact with found")
+	elif event.is_action_pressed("drop"):
+		if not held_item:
+			print("no item being held?")
+			return
+		var object = find_interactable_in(held_item)
+		if not object:
+			print("missing object logic for ", held_item.name)
+			return
+		object.drop()
 	
 
 func CameraLook(Movement: Vector2):
@@ -48,20 +62,27 @@ func _process(delta):
 		
 
 func raycast_interactables():
-	var object = interact_ray.get_collider()
+	var collider = interact_ray.get_collider()
 	interact_prompt_label.text = ''
-		
-	if object and object is InteractableObject and object.can_interact:		
-		interact_prompt_label.text = object.interaction_prompt	
-		interact_prompt_label.visible = true
-		current_interactable = object		
-	else:
-		return		
+	current_interactable = null
 
+	if collider:
+		# The collider is the RigidBody3D (Ball) not the collisionShape3D.... yea
+		var interactable = find_interactable_in(collider)
+		if interactable:
+			#maybe should check for interactble here, but I think I want prompt to show up either way....?
+			print("looking at ", interactable)
+			
+			interact_prompt_label.text = interactable.interaction_prompt
+			interact_prompt_label.visible = true
+			current_interactable = interactable
+					
+	
 func _physics_process(delta: float) -> void:
 	# Add the gravity.
 	if not is_on_floor():
 		velocity += get_gravity() * delta
+		
 
 	# Handle jump.
 	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
@@ -79,3 +100,10 @@ func _physics_process(delta: float) -> void:
 		velocity.z = move_toward(velocity.z, 0, SPEED)
 
 	move_and_slide()
+
+
+func find_interactable_in(node: Node) -> InteractableObject:
+	for child in node.get_children():
+		if child is InteractableObject:
+			return child
+	return null

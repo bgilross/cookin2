@@ -107,6 +107,7 @@ script = SubResource("GDScript_bo1nx")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.412599, -0.0742059, -0.91507)
 
 [node name="PushArea" type="Area3D" parent="CharacterBody3D"]
+collision_layer = 4
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D/PushArea"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.741855, -0.411901)

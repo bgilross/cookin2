@@ -4,10 +4,12 @@
 class_name InteractableObject
 extends Node3D
 
-@export var interaction_prompt : String 
+@export var interaction_prompt : String = "Press [F] to Interact"
 @export var can_interact : bool = true #ininteraction could be TEMPORARILY disabled, like door is in process of opening
 
-func _interact():
+
+func _main_interaction():
 	print("Override This Function!")
-	
+
+
 	

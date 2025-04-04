@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://co0f10xhgbr74"]
 
-[ext_resource type="Script" uid="uid://6rm1ffttxo5e" path="res://Scripts/BallInteractable.gd" id="1_8a2hy"]
+[ext_resource type="Script" uid="uid://xg050clrlltt" path="res://Scripts/PhysicsPickable.gd" id="1_8a2hy"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2kv05"]
 albedo_color = Color(1, 0.00463581, 0.27733, 1)
@@ -14,10 +14,12 @@ height = 0.2
 radius = 0.100983
 
 [node name="Ball" type="RigidBody3D"]
-script = ExtResource("1_8a2hy")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("SphereMesh_8a2hy")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("SphereShape3D_2kv05")
+
+[node name="PickableLogic" type="Node3D" parent="."]
+script = ExtResource("1_8a2hy")
