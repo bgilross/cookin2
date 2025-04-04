@@ -3,7 +3,8 @@
 extends CharacterBody3D
 
 @onready var MainCamera = $MainCamera
-@onready var RayCast = $MainCamera/InteractionController
+@onready var interact_ray  = $MainCamera/InteractionRaycast
+@onready var interact_prompt_label = $MainCamera/InteractionPrompt
 
 const SPEED = 5.0
 const JUMP_VELOCITY = 4.5
@@ -11,9 +12,11 @@ const JUMP_VELOCITY = 4.5
 var CameraRotation = Vector2(0,0)
 var MouseSensitivity = 0.002
 var held_item: Node = null
+var current_interactable: Node = null
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	interact_prompt_label.visible = false
 	
 func _input(event):
 	if event.is_action_pressed("ui_cancel"):
@@ -22,6 +25,10 @@ func _input(event):
 	if event is InputEventMouseMotion:
 		var MouseEvent = event.relative * MouseSensitivity
 		CameraLook(MouseEvent)
+		
+	if event.is_action_pressed("interact"):
+		if current_interactable:
+			print ("Char: interacting with ", current_interactable.name)
 	
 
 func CameraLook(Movement: Vector2):
@@ -36,6 +43,20 @@ func CameraLook(Movement: Vector2):
 	MainCamera.rotate_object_local(Vector3(1,0,0), -CameraRotation.y) #then rotate X ...?
 	
 	
+func _process(delta):
+	raycast_interactables()
+		
+
+func raycast_interactables():
+	var object = interact_ray.get_collider()
+	interact_prompt_label.text = ''
+		
+	if object and object is InteractableObject and object.can_interact:		
+		interact_prompt_label.text = object.interaction_prompt	
+		interact_prompt_label.visible = true
+		current_interactable = object		
+	else:
+		return		
 
 func _physics_process(delta: float) -> void:
 	# Add the gravity.

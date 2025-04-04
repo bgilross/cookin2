@@ -4,7 +4,9 @@
 extends InteractableObject
 #ovveride the interact function!
 
+func _ready():
+	interaction_prompt = "Ball Interact Prompt!"
+
 func _interact ():
-	interact_prompt = "Ball interact prompt"
 	print("Interact With Ball")
 	 
