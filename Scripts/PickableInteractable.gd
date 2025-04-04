@@ -34,8 +34,6 @@ func drop():
 
 	# Re-add the body to the world
 	world_root.add_child(body)
-	
-	
 
 	var forward = holder.global_transform.basis.z.normalized()
 	var start_pos = hold_point.global_transform.origin
@@ -49,14 +47,11 @@ func drop():
 	is_held = false
 	can_interact = true
 	holder = null
-	print(body.transform)
-	
 	
 func attempt_pickup(interactor: Node3D):
 	if not can_pickup:
 		print("Item status is not set to can_pickup")
 		return
-	print("item can be picked up, looking for hold point on interactor: ", interactor.name)
 	
 	var hold_point = interactor.get_node_or_null("MainCamera/HoldPoint")
 	if not hold_point:
@@ -75,15 +70,8 @@ func attempt_pickup(interactor: Node3D):
 	print(body.name, " is getting picked up by, ", interactor.name)
 	
 	var current_parent = body.get_parent()
-	print("attempting to remove ", body.name, " from parent: ", current_parent)
-
-	current_parent.remove_child(body)
-	print("checking current parent: ", body.get_parent())
-	
-	print("attempting to add: ", body.name, " to parent hold point: ", hold_point.name)
-	hold_point.add_child(body)
-	
-	print("checking parent: ", body.get_parent())
+	current_parent.remove_child(body)		
+	hold_point.add_child(body)	
 	
 	is_held = true
 	holder = interactor
@@ -96,12 +84,3 @@ func attempt_pickup(interactor: Node3D):
 	can_interact = false
 	body.freeze = true
 	interactor.held_item = body 
-	print(body.name, " picked up by ", interactor.name)
-	
-	
-	
-
-
-
-	
-	

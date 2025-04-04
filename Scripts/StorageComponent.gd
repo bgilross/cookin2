@@ -6,13 +6,19 @@ class_name StorageComponent
 @export var can_store: bool = true
 
 
-var items: Array[Node] = []
+var stored_items: Array[Node] = []
 
 func _ready():
 	interaction_prompt = "Press [F] to open Storage"
 	
+func main_interaction(interactor):
+	print("interacting with Storage Crate: ")
+	#probably for regular crates this would be opening them up to view contents in a UI
+	#for VSO Visible Storage Object, they will have a class extending this, probably with a function to check and set parameters before running attempt add./add
+	
+	
 func attempt_add_item(item:Node) -> bool:
-	if items.size() >= item_capacity:
+	if stored_items.size() >= item_capacity:
 		print("Storage is full")
 		return false
 		
@@ -31,7 +37,7 @@ func attempt_add_item(item:Node) -> bool:
 		return false
 		
 func add_item(item):
-	items.append(item)
+	stored_items.append(item)
 	print("added item")
 	
 	

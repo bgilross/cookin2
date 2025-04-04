@@ -103,31 +103,31 @@ func _physics_process(delta: float) -> void:
 
 func find_interactable_in(node: Node) -> InteractableObject:
 	# Debug output for investigation
-	print("Searching for interactable in: ", node.name)	
+	#print("Searching for interactable in: ", node.name)	
 	# Check if this node is an InteractableObject
 	if node is InteractableObject:
-		print("Node itself is an InteractableObject!")
+		#print("Node itself is an InteractableObject!")
 		return node	
 	# Check direct children
 	for child in node.get_children():
-		print("Checking child: ", child.name, " (", child.get_class(), ")")
+		#print("Checking child: ", child.name, " (", child.get_class(), ")")
 		if child is InteractableObject:
-			print("Found interactable child: ", child.name)
+			#print("Found interactable child: ", child.name)
 			return child	
 	# Check parent's children (siblings)
 	if node.get_parent():
-		print("Checking siblings in parent: ", node.get_parent().name)
+		#print("Checking siblings in parent: ", node.get_parent().name)
 		for child in node.get_parent().get_children():
 			if child is InteractableObject:
-				print("Found interactable sibling: ", child.name)
+				#print("Found interactable sibling: ", child.name)
 				return child				
 	# Check parent node
 	if node.get_parent() and node.get_parent() is InteractableObject:
-		print("Parent is an InteractableObject: ", node.get_parent().name)
+		#print("Parent is an InteractableObject: ", node.get_parent().name)
 		return node.get_parent()		
 	# As a last resort, check parent's parent (grandparent) node
 	if node.get_parent() and node.get_parent().get_parent() and node.get_parent().get_parent() is InteractableObject:
-		print("Grandparent is an InteractableObject: ", node.get_parent().get_parent().name)
+		#print("Grandparent is an InteractableObject: ", node.get_parent().get_parent().name)
 		return node.get_parent().get_parent()	
-	print("No interactable found for: ", node.name)
+	#print("No interactable found for: ", node.name)
 	return null
