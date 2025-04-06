@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://dy2u6s33l0rwk" path="res://Scripts/CharacterController.gd" id="1_jjgbg"]
 [ext_resource type="PackedScene" uid="uid://co0f10xhgbr74" path="res://Prefabs/ball.tscn" id="2_bo1nx"]
 [ext_resource type="Script" uid="uid://1dhrv1se8v52" path="res://Scripts/Spawner.gd" id="3_8gbba"]
-[ext_resource type="PackedScene" uid="uid://cwjrw81v0usr5" path="res://Prefabs/storage_tray.tscn" id="4_jjvhh"]
+[ext_resource type="PackedScene" uid="uid://bf8bwehx5b3x1" path="res://Prefabs/storage_tray.tscn" id="4_jjvhh"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_7dm0k"]
 sky_top_color = Color(0.258006, 0.571359, 0.976834, 1)
