@@ -15,6 +15,9 @@ var CameraRotation = Vector2(0,0)
 var MouseSensitivity = 0.002
 var held_item: Node = null
 var current_interactable: Node = null
+var current_target: Node = null
+var target_type: String = ""
+
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -29,22 +32,46 @@ func _input(event):
 		CameraLook(MouseEvent)
 		
 	if event.is_action_pressed("interact"):
-		if current_interactable:
-			print ("Char: interacting with ", current_interactable.name)
-			current_interactable.main_interaction(self)
-		else:
-			print ("No interactable to interact with found")
+		resolve_interaction(current_target)
 	elif event.is_action_pressed("drop"):
 		if not held_item:
 			print("no item being held?")
 			return
-		var object = find_interactable_in(held_item)
-		if not object:
-			print("missing object logic for ", held_item.name)
+		if not held_item is Pickable:
+			print("Item missing Pickable logic for DROP method")
 			return
-		object.drop()
-	
+		held_item.drop()
+		
+		
+		#Char presses F, now we check out the object we are trying to press F on, there are a few scenarios:]
+		#object is simple interactable, like a button, it will only have an Interactable script attached, this only has a prompt message and an interact function.
+			#in this case we want to press the button, if it's interactable at the moment, if not give message, if so print details
+		#object is simple pickable object, like a ball we can hold in our hand or in inventory or on a VSO
+			#object will have a script Pickable attached to its Root RigidBody3D., for now we are making ALLL PICKABLES RIGIDBODY 3DS!!!!!
+				#could make another separate class for exceptions.
+			#we want to call the pickup function
+				#obj might handle the following logic:
+				#if players hands empty, pickup object into hands
+				#if players hands full
+					#if held object is VSO and has room
+						#pick up object onto VSO
+					#if held object NOT VSO or FULL or not compatible VSO or Storage of somekind
+						#try to add to player inventory
+								#this is interesting because now VSO doesn't actually have a pickup or even use function it just gets used as storage if the conditions are right
 
+func resolve_interaction(target: Node):
+	if not target:
+		print("No target to interact with")
+		return
+	#check target type
+	if target is Interactable:
+		print("Target is Interactable")
+		target.interact(self)
+	
+	elif target is Pickable:
+		print("Target is Pickable")
+		target.attempt_pickup(self)
+		
 func CameraLook(Movement: Vector2):
 	CameraRotation += Movement
 	#clamp rotation to Y axis:
@@ -58,30 +85,30 @@ func CameraLook(Movement: Vector2):
 	
 	
 func _process(delta):
-	raycast_interactables()
-		
-
-func raycast_interactables():
-	var collider = interact_ray.get_collider()
-	interact_prompt_label.text = ''
-	current_interactable = null
-
-	if collider:		
-		# The collider is the RigidBody3D (Ball) not the collisionShape3D
-		var interactable = find_interactable_in(collider)
-		if interactable:
-			#print("Found interactable: ", interactable.name, " with prompt: ", interactable.interaction_prompt)
-			interact_prompt_label.text = interactable.interaction_prompt
-			interact_prompt_label.visible = true
-			current_interactable = interactable
-		#else:
-			#print("No interactable found in or near ", collider.name)
+	current_target = interact_ray.get_collider()
+	print("current_target: ", current_target)
+	resolve_raycast(current_target)	
+	
+func resolve_raycast(target: Node):
+	interact_prompt_label.visible = false
+	if target and target.get("interaction_prompt"):
+		interact_prompt_label.text = target.interaction_prompt
+		interact_prompt_label.visible = true
+	#if target is Interactable:
+		#print("Target Interactable")
+	#elif target is Pickable:
+		#print("Target Pickable")		
+	#if target:
+		#for child in target.get_children():
+			#if child is Area3D:
+				#print("found Area3D child")
+				#if child is VisibleStorage:
+						#print("found VisibleStorage")						
 	
 func _physics_process(delta: float) -> void:
 	# Add the gravity.
 	if not is_on_floor():
-		velocity += get_gravity() * delta
-		
+		velocity += get_gravity() * delta		
 
 	# Handle jump.
 	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
@@ -99,35 +126,3 @@ func _physics_process(delta: float) -> void:
 		velocity.z = move_toward(velocity.z, 0, SPEED)
 
 	move_and_slide()
-
-
-func find_interactable_in(node: Node) -> InteractableObject:
-	# Debug output for investigation
-	#print("Searching for interactable in: ", node.name)	
-	# Check if this node is an InteractableObject
-	if node is InteractableObject:
-		#print("Node itself is an InteractableObject!")
-		return node	
-	# Check direct children
-	for child in node.get_children():
-		#print("Checking child: ", child.name, " (", child.get_class(), ")")
-		if child is InteractableObject:
-			#print("Found interactable child: ", child.name)
-			return child	
-	# Check parent's children (siblings)
-	if node.get_parent():
-		#print("Checking siblings in parent: ", node.get_parent().name)
-		for child in node.get_parent().get_children():
-			if child is InteractableObject:
-				#print("Found interactable sibling: ", child.name)
-				return child				
-	# Check parent node
-	if node.get_parent() and node.get_parent() is InteractableObject:
-		#print("Parent is an InteractableObject: ", node.get_parent().name)
-		return node.get_parent()		
-	# As a last resort, check parent's parent (grandparent) node
-	if node.get_parent() and node.get_parent().get_parent() and node.get_parent().get_parent() is InteractableObject:
-		#print("Grandparent is an InteractableObject: ", node.get_parent().get_parent().name)
-		return node.get_parent().get_parent()	
-	#print("No interactable found for: ", node.name)
-	return null

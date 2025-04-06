@@ -1,19 +1,15 @@
-extends InteractableObject
-class_name StorageComponent
+extends Area3D
+class_name Storage
 
 @export var item_capacity: int = 10
 @export var allowed_item: Node = null
 @export var can_store: bool = true
+@export var interaction_prompt: String = "Press [F] to open storage"
 
 var stored_items: Array[Node] = []
-
-func _ready():
-	print("[Storage] Ready from ", self.name)
-	interaction_prompt = "Press [F] to use Storage"
 	
 func main_interaction(interactor):
-	print("[Storage] Interacting with Storage: ", get_parent().name)
-	
+	print("[Storage] Interacting with Storage: ", get_parent().name)	
 	# Check if the player is holding an item that can be stored
 	if interactor.held_item:
 		print("[Storage] Player is holding item: ", interactor.held_item.name)

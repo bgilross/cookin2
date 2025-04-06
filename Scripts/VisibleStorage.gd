@@ -1,115 +1,57 @@
-extends StorageComponent
-
-class_name VisibleStorageObject
+extends Area3D
+class_name VisibleStorage
 
 @export var item_size: Vector3 = Vector3(0.1, 0.1, 0.1)
 @export var show_debug_slots: bool = true
 @export var is_static_storage: bool = false
+@export var interaction_prompt: String = "Press [F] to interact with storage"
 
 var visual_slots: Array[Transform3D] = []
-var storage_area: Area3D = null
 var stored_objects: Array[Node] = []
 
+func _ready():
+	_create_storage_slots()
 
-func _ready() -> void:
-	# Ensure our parent is a RigidBody3D or similar
-	var parent_obj = get_parent()
-	if not parent_obj:
-		push_error("VisibleStorageObject have Parent object")
-		return
-		
-	# Get reference to storage area which defines the storage volume
-	storage_area = parent_obj.get_node_or_null("StorageArea")
-	if not storage_area:
-		push_error("StorageArea not found on " + parent_obj.name)
-		return
-		
-	# Connect signals for item detection
-	storage_area.body_entered.connect(_on_storage_area_body_entered)
-	storage_area.body_exited.connect(_on_storage_area_body_exited)
-	
-	# Wait one frame to ensure everything is initialized
-	await get_tree().process_frame
-	
-	# Create the storage slots
-	_create_storage_slots()	
-	
-func main_interaction(interactor) -> void:
-	# Handle interaction with the storage
-	print("[VSO] Storage interaction from: ", interactor.name)	
-	#if this thing is currently being held:
-		#main_interaction would maybe pick other things up into it?
-	#if NOT static storage, F would have the player pick this thang up
-	
-	
-	#if IS static storatge 
-		#if player hands empty
-			#if shelf empty, do nothing
-			#if shelf full, player take item
-		#if player hands full
-			#if held item storable
-				#if shelf empty, store it //// OR SHOULD G handle this kind of thing, G for DROP G for STORE, F for pickup F for STORE item in HELD TRAY... i dunno
-				#if shelf occupied, 
-					#if helf item compatible with currently stored items store it
-					#else do nothing
-				#if shelf full do nothing
-				
-
-func store_item(item: Node) -> bool:
-	# Check if we have available slots
+func store_item(item: RigidBody3D) -> bool:
 	if stored_objects.size() >= visual_slots.size():
-		print("[VSO] Storage is full")
+		print("[VSO] Storage full")
 		return false
-		
-	# Add to our stored items array
-	stored_objects.append(item)
-	
-	# Get the first available slot
-	var slot_index = stored_objects.size() - 1
-	var slot_transform = visual_slots[slot_index]
-	
-	# Position the item in the slot (assuming it's a Node3D)
-	if item is Node3D:
-		item.position = slot_transform.origin
-		
-	print("[VSO] Stored item in slot ", slot_index)
+	var index = stored_objects.size()
+	stored_objects.append(item)	
+	item.position = visual_slots[index].origin
+	print("[VSO] Stored item at index ", index)
 	return true
 
-func retrieve_last_item(interactor) -> bool:
+func retrieve_last_item(interactor: Node3D) -> bool:
 	if stored_objects.is_empty():
-		print("[VSO] Storage is empty")
 		return false
-		
-	# Get the last stored item
+
 	var item = stored_objects.pop_back()
-	
-	# You'd need to implement the logic to give this item to the interactor
-	# This depends on how your pickup system works
-	
 	print("[VSO] Retrieved item for ", interactor.name)
+	# You’ll still need to hook this into your pickup logic
 	return true
 
-func _on_storage_area_body_entered(body: Node) -> void:
-	if body is RigidBody3D:
-		var interactable = find_interactable_in(body)
-		if interactable and interactable is PickableInteractable:
-			print("[VSO] Valid pickable item detected: ", body.name)
-
-func _on_storage_area_body_exited(body: Node) -> void:
-	print("[VSO] Item left storage area: ", body.name)
-
-func find_interactable_in(node: Node) -> Node:
-	# Look for PickableInteractable in children
-	for child in node.get_children():
-		if child is PickableInteractable:
-			return child
-			
-	# Check parent
-	var parent = node.get_parent()
-	if parent and parent is PickableInteractable:
-		return parent
-		
-	return null
+#func _on_storage_area_body_entered(body: Node) -> void:
+	#if body is RigidBody3D:
+		#var interactable = find_interactable_in(body)
+		#if interactable and interactable is PickableInteractable:
+			#print("[VSO] Valid pickable item detected: ", body.name)
+#
+#func _on_storage_area_body_exited(body: Node) -> void:
+	#print("[VSO] Item left storage area: ", body.name)
+#
+#func find_interactable_in(node: Node) -> Node:
+	## Look for PickableInteractable in children
+	#for child in node.get_children():
+		#if child is PickableInteractable:
+			#return child
+			#
+	## Check parent
+	#var parent = node.get_parent()
+	#if parent and parent is PickableInteractable:
+		#return parent
+		#
+	#return null
 
 func _create_storage_slots() -> void:
 	# Clean up any existing debug meshes
@@ -117,7 +59,7 @@ func _create_storage_slots() -> void:
 	visual_slots.clear()
 	
 	# Get the storage area shape
-	var shape_node = storage_area.get_node_or_null("CollisionShape3D")
+	var shape_node = get_node_or_null("CollisionShape3D")
 	if not shape_node or not shape_node.shape is BoxShape3D:
 		push_error("StorageArea must have a CollisionShape3D with BoxShape3D")
 		return
@@ -198,7 +140,7 @@ func _create_debug_mesh(position: Vector3, size: Vector3, index: int) -> void:
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	
 	ghost.set_surface_override_material(0, material)
-	get_parent().add_child(ghost)
+	add_child(ghost)
 
 func _clear_slot_debug_meshes() -> void:
 	for child in get_parent().get_children():

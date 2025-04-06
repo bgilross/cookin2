@@ -1,8 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://bf8bwehx5b3x1"]
+[gd_scene load_steps=7 format=3 uid="uid://bf8bwehx5b3x1"]
 
-[ext_resource type="Script" uid="uid://xg050clrlltt" path="res://Scripts/PhysicsComponent.gd" id="1_2codb"]
-[ext_resource type="Script" uid="uid://cmuv3muqtutvw" path="res://Scripts/PickableInteractable.gd" id="2_avcd0"]
-[ext_resource type="Script" uid="uid://da2hdto0gur0k" path="res://Scripts/VisibleStorageObject.gd" id="3_s37ky"]
+[ext_resource type="Script" uid="uid://cmuv3muqtutvw" path="res://Scripts/Pickable.gd" id="2_avcd0"]
+[ext_resource type="Script" uid="uid://da2hdto0gur0k" path="res://Scripts/VisibleStorage.gd" id="3_s37ky"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2codb"]
 albedo_color = Color(0.5, 0.5, 0.5, 1)
@@ -23,6 +22,7 @@ size = Vector3(0.98, 0.3, 0.68)
 mass = 2.0
 freeze_mode = 1
 continuous_cd = true
+script = ExtResource("2_avcd0")
 
 [node name="BaseMesh" type="MeshInstance3D" parent="."]
 mesh = SubResource("BoxMesh_joc1d")
@@ -32,20 +32,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.025, 0)
 shape = SubResource("BoxShape3D_e3itu")
 
 [node name="StorageArea" type="Area3D" parent="."]
+script = ExtResource("3_s37ky")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StorageArea"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
 shape = SubResource("BoxShape3D_i5kqp")
-
-[node name="PhysicsLogic" type="Node" parent="."]
-script = ExtResource("1_2codb")
-material_friction = 0.5
-material_rough = true
-
-[node name="PickableLogic" type="Node" parent="."]
-script = ExtResource("2_avcd0")
-pickup_offset = Vector3(0, 0, -0.5)
-pickup_rotation = Vector3(0, 1.5708, 0)
-
-[node name="StorageLogic" type="Node" parent="."]
-script = ExtResource("3_s37ky")

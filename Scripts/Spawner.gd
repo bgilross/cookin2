@@ -1,15 +1,12 @@
-extends InteractableObject
+extends Interactable
 
 @export var spawn_location: Node3D
 @export var item_scene: PackedScene
 
-
-
-# Called when the node enters the scene tree for the first time.
 func _ready():
 	interaction_prompt = " Press [F] to Spawn Ball "
-	
-func main_interaction(interactor = null):
+		
+func interact(interactor = null):
 	_spawnball()
 	
 func _spawnball():
