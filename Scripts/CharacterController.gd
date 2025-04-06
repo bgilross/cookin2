@@ -18,6 +18,8 @@ var current_interactable: Node = null
 var current_target: Node = null
 var target_type: String = ""
 
+var pickup_tweak_target: Pickable = null
+var pickup_tweak_offset: Vector3 = Vector3.ZERO
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -30,6 +32,20 @@ func _input(event):
 	if event is InputEventMouseMotion:
 		var MouseEvent = event.relative * MouseSensitivity
 		CameraLook(MouseEvent)
+		
+	if Input.is_action_pressed("debug_up"):
+		pickup_tweak_offset.y += 0.01
+	if Input.is_action_pressed("debug_down"):
+		pickup_tweak_offset.y -= 0.01
+	if Input.is_action_pressed("ui_up"):
+		print("action up registered")
+		pickup_tweak_offset.z -= 0.01
+	if Input.is_action_pressed("ui_down"):
+		pickup_tweak_offset.z += 0.01
+	if Input.is_action_pressed("ui_left"):
+		pickup_tweak_offset.x -= 0.01
+	if Input.is_action_pressed("ui_right"):
+		pickup_tweak_offset.x += 0.01
 		
 	if event.is_action_pressed("interact"):
 		resolve_interaction(current_target)
@@ -86,8 +102,16 @@ func CameraLook(Movement: Vector2):
 	
 func _process(delta):
 	current_target = interact_ray.get_collider()
-	print("current_target: ", current_target)
+	#print("current_target: ", current_target)
 	resolve_raycast(current_target)	
+	
+	if held_item and held_item is Pickable:
+		pickup_tweak_target = held_item
+		var hold_point = get_node("MainCamera/HoldPoint")
+		if hold_point:
+			held_item.transform.origin = pickup_tweak_offset
+	if Input.is_action_just_pressed("ui_accept") and pickup_tweak_target:
+		print("Final pickup_offset: ", pickup_tweak_offset)
 	
 func resolve_raycast(target: Node):
 	interact_prompt_label.visible = false

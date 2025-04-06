@@ -24,6 +24,10 @@ var current_parent: Node3D = null
 var current_layer: int = 1
 var current_mask: int = 1
 
+#positioning debug controlls vrs
+var pickup_tweak_target: Pickable = null
+var pickup_tweak_offset: Vector3 = Vector3.ZERO
+		
 func _ready():
 	if has_physics:
 		var mat := PhysicsMaterial.new()
@@ -38,6 +42,10 @@ func _ready():
 		self.sleeping = false
 		self.freeze_mode = RigidBody3D.FREEZE_MODE_STATIC	
 
+
+#func _process(delta):
+	##debug_draw_state_recursive()
+	
 func attempt_pickup(interactor: Node3D):
 	if not can_pickup:
 		print("Item status is not set to can_pickup")
@@ -56,11 +64,11 @@ func attempt_pickup(interactor: Node3D):
 				print("found hold point calling pickupfunction ")				
 				pickup_hands(interactor, hold_point)
 	if held_item:
-		print("Interactor is holding an item, checking if item is VSO/Usable")
-		for child in held_item:
+		print("Interactor is holding an item: ", held_item, " checking if item is VSO/Usable")
+		for child in held_item.get_children():
 			if child is VisibleStorage:
 				print("Held Item is type VisibleStorage, attempting to store ", self, " in ", child )
-				pickup_storage(interactor, held_item)
+				pickup_storage(interactor, child)
 
 func pickup_inventory(interactor : Node3D):
 	print("attempting to add item,  ", self , "  to inventory of " , interactor)		
@@ -68,12 +76,24 @@ func pickup_inventory(interactor : Node3D):
 func pickup_hands(interactor : Node3D, hold_point : Node3D):
 	print("attempting to pickup ", self , " into ", interactor, " hands at holdpooint: ", hold_point)
 	prepare_item_pickup(hold_point)
+	global_transform.origin = hold_point.to_global(pickup_offset)
 	interactor.held_item = self
 	holder = interactor
 	is_held = true
 	
 func pickup_storage(interactor : Node3D, storage : VisibleStorage):
 	print("attempting to pickup ", self , " into ", interactor , "storage device: ", storage)
+	#check storage item for space:
+	if storage.visual_slots == storage.stored_objects:
+		print("no space in storage attempt to add to inventory instead")
+		pickup_inventory(interactor)
+		return
+	prepare_item_pickup(storage)
+	
+	var index = storage.stored_objects.size()
+	storage.stored_objects.append(self)	
+	self.position = storage.visual_slots[index].origin
+	print("[VSO] Stored item at index ", index)	
 
 func prepare_item_pickup(new_parent : Node3D):
 	get_parent().remove_child(self)
@@ -85,29 +105,60 @@ func prepare_item_pickup(new_parent : Node3D):
 	rotation = pickup_rotation
 	can_pickup = false
 	freeze = true	
+
+	_set_collision_shapes_enabled(self, false)
 	
 
 func drop():
-	#called when dropping from hands or dropoing from VSO
-	# Cache tree root BEFORE removing anything
 	var world_root = get_tree().root	
 	var parent = get_parent()
 	parent.remove_child(self)
-
-	# Re-add the body to the world
 	world_root.add_child(self)
+	
+	_set_collision_shapes_enabled(self, true)
 
 	var forward = holder.global_transform.basis.z.normalized()
 	var start_pos = parent.global_transform.origin
 	global_transform.origin = start_pos
 
 	freeze = false	
-	
 	var player_velocity = holder.get_real_velocity()
 	linear_velocity = Vector3(player_velocity.x, 0.0, player_velocity.z)
-	#linear_velocity = Vector3(player_velocity.x, -1.0, player_velocity.z)
-	
+
 	holder.held_item = null
 	is_held = false
 	can_pickup = true
 	holder = null
+	
+	
+func _set_collision_shapes_enabled(node: Node, enabled: bool):
+	for child in node.get_children():
+		if child is CollisionShape3D:
+			child.disabled = not enabled
+		elif child is Area3D:
+			child.monitoring = enabled
+			if enabled:
+				child.set_deferred("collision_layer", current_layer)
+				child.set_deferred("collision_mask", current_mask)
+			else:
+				child.set_deferred("collision_layer", 0)
+				child.set_deferred("collision_mask", 0)
+		#_set_collision_shapes_enabled(child, enabled)
+		
+		
+func debug_draw_state_recursive() -> void:
+	_draw_shape_state_recursive(self)
+
+func _draw_shape_state_recursive(node: Node) -> void:
+	for child in node.get_children():
+		if child is CollisionShape3D:
+			var color: Color
+			if child.disabled:
+				color = Color.RED
+			else:
+				color = Color.GREEN
+			DebugDrawManager.draw_collision_debug(child, color)
+		elif child is Node:
+			_draw_shape_state_recursive(child)
+		
+		
