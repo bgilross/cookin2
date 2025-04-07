@@ -15,6 +15,9 @@ var processing_history = []
 var dirt_spots = []
 var is_clean = false
 
+func _ready() -> void:
+	add_dirt_to_sphere()
+
 func change_state(new_state):
 	current_state = new_state
 	
@@ -32,7 +35,7 @@ func get_state():
 func add_dirt_to_sphere(max_dirt_spots: int = 0):
 	var dirt = Sprite3D.new()
 	dirt.texture = preload("res://ImgAssets/vecteezy_pile-of-soil-scattered_48112031.png")
-	for i in range(max_dirt_spots):
+	for i in max_dirt_spots:
 		dirt.pixel_size = 0.05
 		
 		var theta = randf() * 2 * PI

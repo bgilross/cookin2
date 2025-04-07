@@ -9,13 +9,15 @@ radius = 0.075
 height = 0.15
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_7ejs3"]
-radius = 0.075
+radius = 0.076
 
 [node name="FoodBall" type="RigidBody3D"]
 script = ExtResource("1_y1w2c")
+custom_mass = 0.5
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("SphereMesh_katco")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.000434488, 2.98023e-08, -4.8697e-05)
 shape = SubResource("SphereShape3D_7ejs3")
