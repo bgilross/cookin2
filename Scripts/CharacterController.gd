@@ -5,10 +5,15 @@ extends CharacterBody3D
 @onready var interact_ray  = $MainCamera/InteractionRaycast
 @onready var interact_prompt_label = $MainCamera/InteractionPrompt
 @onready var push_area = $PushArea
+@onready var crosshair = $CanvasLayer/Crosshair
+
+@export var crosshair_radius := 4.0
+@export var crosshair_thickness := 2.0
+@export var color := Color.BLACK
 
 const SPEED = 5.0
 const JUMP_VELOCITY = 4.5
-const PUSH_FORCE = 10.0
+const PUSH_FORCE = 1.5
 const STEP_HEIGHT = 0.3  # How high objects the character can step over
 const MAX_SLOPE_ANGLE = 45.0  # Maximum slope angle the character can walk up
 
@@ -26,6 +31,7 @@ var show_debug_pickup_offset: bool = false
 
 func _ready():
 	initialize()
+
 
 func _physics_process(delta: float) -> void:
 	handle_movement(delta)

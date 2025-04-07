@@ -16,6 +16,7 @@ var dirt_spots = []
 var is_clean = false
 
 func _ready() -> void:
+	super._ready() #initialize PHYSICS from Parent Clas Pickable
 	add_dirt_to_sphere()
 
 func change_state(new_state):

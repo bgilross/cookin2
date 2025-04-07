@@ -118,6 +118,7 @@ func prepare_item_pickup(new_parent : Node3D):
 	_set_collision_shapes_enabled(self, false)	
 
 func drop():
+	can_sleep = false
 	var world_root = get_tree().root	
 	var parent = get_parent()
 	parent.remove_child(self)
@@ -130,8 +131,11 @@ func drop():
 	global_transform.origin = start_pos
 
 	freeze = false	
+	sleeping = false
 	var player_velocity = holder.get_real_velocity()
 	linear_velocity = Vector3(player_velocity.x, 0.0, player_velocity.z)
+	if linear_velocity.length() < 0.1:
+		linear_velocity = Vector3(0.01, 0, 0.01)
 
 	holder.held_item = null
 	is_held = false

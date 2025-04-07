@@ -13,7 +13,6 @@ radius = 0.076
 
 [node name="FoodBall" type="RigidBody3D"]
 script = ExtResource("1_y1w2c")
-custom_mass = 0.5
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("SphereMesh_katco")
