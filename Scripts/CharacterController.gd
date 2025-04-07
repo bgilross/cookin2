@@ -1,5 +1,4 @@
 #Character Controller
-
 extends CharacterBody3D
 
 @onready var MainCamera = $MainCamera
@@ -10,6 +9,8 @@ extends CharacterBody3D
 const SPEED = 5.0
 const JUMP_VELOCITY = 4.5
 const PUSH_FORCE = 10.0
+const STEP_HEIGHT = 0.3  # How high objects the character can step over
+const MAX_SLOPE_ANGLE = 45.0  # Maximum slope angle the character can walk up
 
 var CameraRotation = Vector2(0,0)
 var MouseSensitivity = 0.002
@@ -17,9 +18,12 @@ var held_item: Node = null
 var current_interactable: Node = null
 var current_target: Node = null
 var target_type: String = ""
+var is_using_station: bool = false
 
 var pickup_tweak_target: Pickable = null
 var pickup_tweak_offset: Vector3 = Vector3.ZERO
+
+var debug_pickup_offset: bool = false
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -33,19 +37,7 @@ func _input(event):
 		var MouseEvent = event.relative * MouseSensitivity
 		CameraLook(MouseEvent)
 		
-	if Input.is_action_pressed("debug_up"):
-		pickup_tweak_offset.y += 0.01
-	if Input.is_action_pressed("debug_down"):
-		pickup_tweak_offset.y -= 0.01
-	if Input.is_action_pressed("ui_up"):
-		print("action up registered")
-		pickup_tweak_offset.z -= 0.01
-	if Input.is_action_pressed("ui_down"):
-		pickup_tweak_offset.z += 0.01
-	if Input.is_action_pressed("ui_left"):
-		pickup_tweak_offset.x -= 0.01
-	if Input.is_action_pressed("ui_right"):
-		pickup_tweak_offset.x += 0.01
+	check_debug_inputs()
 		
 	if event.is_action_pressed("interact"):
 		resolve_interaction(current_target)
@@ -56,8 +48,7 @@ func _input(event):
 		if not held_item is Pickable:
 			print("Item missing Pickable logic for DROP method")
 			return
-		held_item.drop()
-		
+		held_item.drop()		
 		
 		#Char presses F, now we check out the object we are trying to press F on, there are a few scenarios:]
 		#object is simple interactable, like a button, it will only have an Interactable script attached, this only has a prompt message and an interact function.
@@ -74,6 +65,23 @@ func _input(event):
 					#if held object NOT VSO or FULL or not compatible VSO or Storage of somekind
 						#try to add to player inventory
 								#this is interesting because now VSO doesn't actually have a pickup or even use function it just gets used as storage if the conditions are right
+func _integrate_forces(state):
+	pass
+
+func check_debug_inputs():
+	if Input.is_action_pressed("debug_up"):
+		pickup_tweak_offset.y += 0.01
+	if Input.is_action_pressed("debug_down"):
+		pickup_tweak_offset.y -= 0.01
+	if Input.is_action_pressed("ui_up"):
+		print("action up registered")
+		pickup_tweak_offset.z -= 0.01
+	if Input.is_action_pressed("ui_down"):
+		pickup_tweak_offset.z += 0.01
+	if Input.is_action_pressed("ui_left"):
+		pickup_tweak_offset.x -= 0.01
+	if Input.is_action_pressed("ui_right"):
+		pickup_tweak_offset.x += 0.01
 
 func resolve_interaction(target: Node):
 	if not target:
@@ -104,7 +112,12 @@ func _process(delta):
 	current_target = interact_ray.get_collider()
 	#print("current_target: ", current_target)
 	resolve_raycast(current_target)	
+	if pickup_offset_debug:
+		debug_pickup_offset()
 	
+	
+	
+func debug_pickup_offset():
 	if held_item and held_item is Pickable:
 		pickup_tweak_target = held_item
 		var hold_point = get_node("MainCamera/HoldPoint")
@@ -112,7 +125,6 @@ func _process(delta):
 			held_item.transform.origin = pickup_tweak_offset
 	if Input.is_action_just_pressed("ui_accept") and pickup_tweak_target:
 		print("Final pickup_offset: ", pickup_tweak_offset)
-	
 func resolve_raycast(target: Node):
 	interact_prompt_label.visible = false
 	if target and target.get("interaction_prompt"):

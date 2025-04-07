@@ -1,12 +1,10 @@
 [gd_scene load_steps=5 format=3 uid="uid://co0f10xhgbr74"]
 
 [ext_resource type="Script" uid="uid://cmuv3muqtutvw" path="res://Scripts/Pickable.gd" id="1_8a2hy"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2kv05"]
-albedo_color = Color(1, 0.00463581, 0.27733, 1)
+[ext_resource type="Material" uid="uid://bf1afhk5vv4p5" path="res://Msts/ball.tres" id="2_n88cj"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_8a2hy"]
-material = SubResource("StandardMaterial3D_2kv05")
+material = ExtResource("2_n88cj")
 radius = 0.1
 height = 0.2
 

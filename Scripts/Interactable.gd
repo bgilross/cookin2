@@ -1,4 +1,4 @@
-#INnteractble basic class for Buttons and simple Interactables. no storage,no pickable,
+#Interactble basic class for Buttons and simple Interactables. no storage,no pickable,
 
 class_name Interactable
 extends StaticBody3D

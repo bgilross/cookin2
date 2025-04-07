@@ -11,7 +11,6 @@ class_name Pickable
 @export var material_rough: bool = false
 
 #pickable stuff
-
 @export var can_pickup : bool = true
 @export var can_hold : bool = true
 @export var can_store : bool = true
@@ -41,7 +40,6 @@ func _ready():
 		self.mass = custom_mass
 		self.sleeping = false
 		self.freeze_mode = RigidBody3D.FREEZE_MODE_STATIC	
-
 
 #func _process(delta):
 	##debug_draw_state_recursive()
@@ -75,11 +73,23 @@ func pickup_inventory(interactor : Node3D):
 	
 func pickup_hands(interactor : Node3D, hold_point : Node3D):
 	print("attempting to pickup ", self , " into ", interactor, " hands at holdpooint: ", hold_point)
+	print("holdpoint location: " , hold_point.transform)
 	prepare_item_pickup(hold_point)
-	global_transform.origin = hold_point.to_global(pickup_offset)
+
+	# Apply local position and rotation relative to HoldPoint
+	var transform_offset := Transform3D()
+	transform_offset.origin = pickup_offset
+
+	transform_offset.basis = Basis()
+	transform_offset.basis = transform_offset.basis.rotated(Vector3(1, 0, 0), deg_to_rad(pickup_rotation.x))
+	transform_offset.basis = transform_offset.basis.rotated(Vector3(0, 1, 0), deg_to_rad(pickup_rotation.y))
+	transform_offset.basis = transform_offset.basis.rotated(Vector3(0, 0, 1), deg_to_rad(pickup_rotation.z))
+
+	self.transform = transform_offset
+
 	interactor.held_item = self
 	holder = interactor
-	is_held = true
+	is_held = true	
 	
 func pickup_storage(interactor : Node3D, storage : VisibleStorage):
 	print("attempting to pickup ", self , " into ", interactor , "storage device: ", storage)
@@ -96,18 +106,16 @@ func pickup_storage(interactor : Node3D, storage : VisibleStorage):
 	print("[VSO] Stored item at index ", index)	
 
 func prepare_item_pickup(new_parent : Node3D):
+	#REPARENT, FREEZE OBJ, but do nothing about location or visibility, leave that to pickup scripts, Inv, player hands, visibility false, etc.
 	get_parent().remove_child(self)
 	new_parent.add_child(self)
 	current_parent = new_parent
 	angular_velocity = Vector3.ZERO
 	linear_velocity = Vector3.ZERO
-	transform.origin = pickup_offset
-	rotation = pickup_rotation
 	can_pickup = false
 	freeze = true	
 
-	_set_collision_shapes_enabled(self, false)
-	
+	_set_collision_shapes_enabled(self, false)	
 
 func drop():
 	var world_root = get_tree().root	
@@ -128,8 +136,7 @@ func drop():
 	holder.held_item = null
 	is_held = false
 	can_pickup = true
-	holder = null
-	
+	holder = null	
 	
 func _set_collision_shapes_enabled(node: Node, enabled: bool):
 	for child in node.get_children():
@@ -143,8 +150,7 @@ func _set_collision_shapes_enabled(node: Node, enabled: bool):
 			else:
 				child.set_deferred("collision_layer", 0)
 				child.set_deferred("collision_mask", 0)
-		#_set_collision_shapes_enabled(child, enabled)
-		
+		#_set_collision_shapes_enabled(child, enabled)		
 		
 func debug_draw_state_recursive() -> void:
 	_draw_shape_state_recursive(self)
@@ -159,6 +165,5 @@ func _draw_shape_state_recursive(node: Node) -> void:
 				color = Color.GREEN
 			DebugDrawManager.draw_collision_debug(child, color)
 		elif child is Node:
-			_draw_shape_state_recursive(child)
-		
+			_draw_shape_state_recursive(child)	
 		

@@ -1,9 +1,10 @@
-[gd_scene load_steps=15 format=3 uid="uid://c1htfmdda8xn6"]
+[gd_scene load_steps=22 format=3 uid="uid://c1htfmdda8xn6"]
 
 [ext_resource type="Script" uid="uid://dy2u6s33l0rwk" path="res://Scripts/CharacterController.gd" id="1_jjgbg"]
 [ext_resource type="PackedScene" uid="uid://co0f10xhgbr74" path="res://Prefabs/ball.tscn" id="2_bo1nx"]
 [ext_resource type="Script" uid="uid://1dhrv1se8v52" path="res://Scripts/Spawner.gd" id="3_8gbba"]
 [ext_resource type="PackedScene" uid="uid://bf8bwehx5b3x1" path="res://Prefabs/storage_tray.tscn" id="4_jjvhh"]
+[ext_resource type="PackedScene" uid="uid://b1lrjhsl16w55" path="res://Prefabs/FoodBall.tscn" id="5_kry3j"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_7dm0k"]
 sky_top_color = Color(0.258006, 0.571359, 0.976834, 1)
@@ -18,6 +19,26 @@ sky_material = SubResource("ProceduralSkyMaterial_7dm0k")
 background_mode = 2
 sky = SubResource("Sky_ig7tw")
 tonemap_mode = 2
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_jjvhh"]
+size = Vector3(100, 1, 100)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kry3j"]
+albedo_color = Color(0.166368, 0.208514, 0.200889, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_21xkr"]
+material = SubResource("StandardMaterial3D_kry3j")
+size = Vector3(100, 0.1, 100)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_kry3j"]
+size = Vector3(10, 1, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jjvhh"]
+albedo_color = Color(5.00319e-05, 0.205008, 0.361255, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_6bp64"]
+material = SubResource("StandardMaterial3D_jjvhh")
+size = Vector3(10, 1, 2)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_h2yge"]
 radius = 0.4
@@ -55,41 +76,30 @@ shadow_enabled = true
 
 [node name="Structure" type="Node" parent="."]
 
-[node name="Ground" type="CSGBox3D" parent="Structure"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.00731111, 0)
-use_collision = true
-size = Vector3(20, 0.015, 20)
+[node name="Ground" type="StaticBody3D" parent="Structure"]
 
-[node name="Wall" type="CSGBox3D" parent="Structure"]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0.0231389, 0.3021, 9.97534)
-use_collision = true
-size = Vector3(0.0458984, 0.605835, 20.4434)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Structure/Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("BoxShape3D_jjvhh")
 
-[node name="Wall2" type="CSGBox3D" parent="Structure"]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 9.82232, 0.248304, 0.111971)
-use_collision = true
-size = Vector3(0.0458984, 0.605835, 20.4434)
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Structure/Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, -0.0002985)
+mesh = SubResource("BoxMesh_21xkr")
 
-[node name="Wall3" type="CSGBox3D" parent="Structure"]
-transform = Transform3D(1, 0, 1.74846e-07, 0, 1, 0, -1.74846e-07, 0, 1, -9.88678, 0.102258, 8.56817e-07)
-use_collision = true
-size = Vector3(0.0458984, 0.605835, 20.4434)
+[node name="Counter" type="StaticBody3D" parent="Structure"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2.50072)
 
-[node name="Wall4" type="CSGBox3D" parent="Structure"]
-transform = Transform3D(-2.18557e-07, 0, 1, 0, 1, 0, -1, 0, -2.18557e-07, 0.240668, -0.0437871, -9.93327)
-use_collision = true
-size = Vector3(0.0458984, 0.605835, 20.4434)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Structure/Counter"]
+shape = SubResource("BoxShape3D_kry3j")
 
-[node name="Counter" type="CSGBox3D" parent="Structure"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00580311, 0.00664592, -2.04395)
-use_collision = true
-size = Vector3(7.96387, 1, 1)
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Structure/Counter"]
+mesh = SubResource("BoxMesh_6bp64")
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="."]
 script = ExtResource("1_jjgbg")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00569534, 0.8, 0.0197073)
 shape = SubResource("CapsuleShape3D_h2yge")
 
 [node name="MainCamera" type="Camera3D" parent="CharacterBody3D"]
@@ -147,3 +157,9 @@ item_scene = ExtResource("2_bo1nx")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="SpawnerButton/StaticBody3D"]
 shape = SubResource("BoxShape3D_1ccww")
+
+[node name="FoodBall" parent="." instance=ExtResource("5_kry3j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.409769, 0.55, -2.00886)
+
+[node name="FoodBall2" parent="." instance=ExtResource("5_kry3j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.156758, 0.582813, -2.02158)

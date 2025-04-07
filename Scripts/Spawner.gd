@@ -12,7 +12,7 @@ func interact(interactor = null):
 func _spawnball():
 	print("attempting spawn ball")
 	var item_instance = item_scene.instantiate()
-	add_child(item_instance)
+	get_tree().root.add_child(item_instance)
 
 	if spawn_location == null:
 		push_error("spawn_location is null!")

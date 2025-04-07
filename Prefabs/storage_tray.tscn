@@ -13,7 +13,7 @@ material = SubResource("StandardMaterial3D_2codb")
 size = Vector3(1, 0.02, 0.7)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_e3itu"]
-size = Vector3(1, 0.0596191, 0.7)
+size = Vector3(1, 0.0732422, 0.720703)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_i5kqp"]
 size = Vector3(0.98, 0.3, 0.68)
@@ -30,8 +30,9 @@ pickup_offset = Vector3(0.21, -0.57, -0.25)
 mesh = SubResource("BoxMesh_joc1d")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0201904, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.000458598, 0.019037, -0.00455672)
 shape = SubResource("BoxShape3D_e3itu")
+debug_color = Color(0.762696, 0, 0.397331, 0.42)
 
 [node name="StorageArea" type="Area3D" parent="."]
 script = ExtResource("3_s37ky")
