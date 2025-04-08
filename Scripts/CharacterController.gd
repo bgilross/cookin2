@@ -32,7 +32,6 @@ var show_debug_pickup_offset: bool = false
 func _ready():
 	initialize()
 
-
 func _physics_process(delta: float) -> void:
 	handle_movement(delta)
 	apply_push_to_nearby_bodies()
@@ -100,11 +99,13 @@ func resolve_interaction(target: Node):
 		return
 	if target is Interactable:
 		print("Target is Interactable")
-		target.interact(self)
-	
+		target.interact(self)	
 	elif target is Pickable:
 		print("Target is Pickable")
 		target.attempt_pickup(self)
+	elif target is Station:
+		print("Target is Station")
+		target.interact(self, MainCamera)
 		
 func CameraLook(Movement: Vector2):
 	CameraRotation += Movement
@@ -150,3 +151,4 @@ func handle_movement(delta):
 func initialize():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	interact_prompt_label.visible = false
+	
